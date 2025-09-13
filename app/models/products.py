@@ -14,9 +14,11 @@ class Product(Base):
     price: Mapped[float] = mapped_column(Float, nullable=False)
     image_url: Mapped[str | None] = mapped_column(String(200), nullable=True)
     stock: Mapped[int] = mapped_column(Integer, nullable=False)
+    rating: Mapped[float] = mapped_column(default=0.0)
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
     category_id: Mapped[int] = mapped_column(ForeignKey("categories.id"), nullable=False)
     seller_id: Mapped[str] = mapped_column(ForeignKey("users.id"), nullable=False)
 
     category = relationship("Category", back_populates="products")
     seller = relationship("User", back_populates="products")
+    reviews = relationship("Review", back_populates='product')

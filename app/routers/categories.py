@@ -13,7 +13,7 @@ router = APIRouter(
 )
 
 
-@router.get("/", response_model=list[CategorySchema])
+@router.get("/", response_model=list[CategorySchema], status_code=status.HTTP_200_OK)
 async def get_all_categories(db: AsyncSession = Depends(get_async_db)):
     """
     Возвращает список всех активных категорий.

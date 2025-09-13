@@ -1,5 +1,6 @@
 from pydantic import BaseModel, Field, ConfigDict, EmailStr
 from typing import Optional
+from datetime import datetime
 
 
 class CategoryCreate(BaseModel):
@@ -48,22 +49,62 @@ class Product(BaseModel):
     price: float = Field(..., description="Цена товара")
     image_url: Optional[str] = Field(None, description="URL изображения товара")
     stock: int = Field(..., description="Количество товара на складе")
-    category_id: int = Field(..., description="ID категории")
+    rating: float = Field(..., description="Рейтинг товара")
     is_active: bool = Field(..., description="Активность товара")
+    category_id: int = Field(..., description="ID категории")
+    seller_id: int = Field(..., description="ID продавца")
 
     model_config = ConfigDict(from_attributes=True)
 
 
 class UserCreate(BaseModel):
+    """
+    Модель для создания и обновления пользователя.
+    Используется в POST и PUT запросах.
+    """
     email: EmailStr = Field(..., description="Email пользователя")
     password: str = Field(..., min_length=8, description="Пароль (минимум 8 символов)")
-    role: str = Field(default="buyer", pattern="^(buyer|seller)$", description="Роль: 'buyer' или 'seller'")
+    role: str = Field(
+        default="buyer",
+        pattern="^(buyer|seller|admin)$",
+        description="Роль: 'buyer', 'seller' или 'admin'"
+    )
 
 
 class User(BaseModel):
-    id: int
-    email: EmailStr
-    is_active: bool
-    role: str
+    """
+    Модель для ответа с данными пользователя.
+    Используется в GET-запросах.
+    """
+    id: int = Field(..., description="Уникальный идентификатор пользователя")
+    email: EmailStr = Field(..., description="Email пользователя")
+    is_active: bool = Field(..., description="Активность пользователя")
+    role: str = Field(..., description="Роль пользователя")
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class ReviewCreate(BaseModel):
+    """
+    Модель для создания и обновления отзыва.
+    Используется в POST и PUT запросах.
+    """
+    product_id: int = Field(..., description="Уникальный идентификатор товара")
+    comment: Optional[str] = Field(None, description="Текст отзыва")
+    grade: int = Field(..., description="Оценка (от 1 до 5)")
+
+
+class Review(BaseModel):
+    """
+    Модель для ответа с данными отзыва.
+    Используется в GET-запросах.
+    """
+    id: int = Field(..., description="Уникальный идентификатор отзыва")
+    user_id: int = Field(..., description="Уникальный идентификатор пользователя")
+    product_id: int = Field(..., description="Уникальный идентификатор продукта")
+    comment: Optional[str] = Field(None, description="Текст отзыва")
+    comment_date: datetime = Field(..., description="Дата создания отзыва")
+    grade: int = Field(..., description="Оценка")
+    is_active: bool = Field(..., description="Активность")
 
     model_config = ConfigDict(from_attributes=True)
